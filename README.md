@@ -2,7 +2,7 @@
 
 A powerful, user-friendly security toolkit to lock and protect Ubuntu network settings from unauthorized modifications.
 
-**Available Languages:** English(./en/README.md) | [日本語](./jp/README.md)
+**Available Languages:** [English](./en/README.md) | [日本語](./jp/README.md)
 
 ---
 
