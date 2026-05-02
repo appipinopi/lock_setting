@@ -1,0 +1,287 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║       Ubuntu 24.04 LTS Network Configuration Lock - Complete Package          ║
+║                                                                                ║
+║                            English & Japanese版                               ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+📦 PACKAGE CONTENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+network-lock/
+├── README.md                    ← START HERE (Main documentation)
+├── SETUP.sh                     ← Setup and quick start guide
+│
+├── en/ (English Version)
+│   ├── network-lock.sh          ← Main lock/unlock script
+│   ├── lock-manager.sh          ← Interactive menu manager
+│   └── README.md                ← Detailed English documentation
+│
+└── jp/ (Japanese Version 日本語)
+    ├── network-lock.sh          ← Main lock/unlock script (日本語)
+    ├── lock-manager.sh          ← Interactive menu manager (日本語)
+    └── README.md                ← Detailed Japanese documentation (日本語)
+
+
+🚀 QUICK START (3 Steps)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Navigate to network-lock directory:
+   $ cd network-lock
+
+2. Run setup:
+   $ bash SETUP.sh
+
+3. Lock network settings:
+   $ sudo ./jp/lock-manager.sh    (Japanese version)
+   $ sudo ./en/lock-manager.sh    (English version)
+
+
+📝 FILE DESCRIPTIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+Main Files:
+──────────
+
+network-lock.sh
+  • Main script that performs locking/unlocking operations
+  • Locks NetPlan configuration files (immutable)
+  • Restricts NetworkManager settings
+  • Blocks dangerous network commands via sudoers
+  • Locks network interface configurations
+  • Creates lock status file (/var/lock/network-lock.status)
+  
+  Usage:
+    $ sudo ./jp/network-lock.sh              # Lock
+    $ sudo ./jp/network-lock.sh --unlock    # Unlock
+
+lock-manager.sh
+  • Interactive menu-driven interface for easy management
+  • Check current lock status
+  • Enable/disable locks with confirmation prompts
+  • User-friendly menu (1-4 options)
+  • Recommended for most users
+  
+  Usage:
+    $ sudo ./jp/lock-manager.sh             # Show menu
+    $ sudo ./jp/lock-manager.sh --status    # Check status only
+
+SETUP.sh
+  • One-time setup script (not required if scripts already executable)
+  • Makes all shell scripts executable
+  • Displays setup guide and documentation
+  • Shows quick reference guide
+  • Provides troubleshooting tips
+
+
+🔒 WHAT GETS PROTECTED
+═══════════════════════════════════════════════════════════════════════════════
+
+1. NetPlan Configuration
+   Files:   /etc/netplan/*.yaml, /etc/netplan/*.yml
+   Method:  Makes files immutable (chattr +i)
+
+2. NetworkManager Settings
+   Files:   /etc/NetworkManager/NetworkManager.conf
+            /etc/NetworkManager/conf.d/99-lock-settings.conf
+   Method:  Restrictive configuration + auth-polkit
+
+3. Network Commands (via sudoers)
+   Blocked: ip, ifconfig, nmcli, networkctl, systemctl (network services),
+            iptables, ip6tables, netplan
+
+4. Network Interfaces
+   Files:   /etc/network/interfaces.d/*
+   Method:  Makes files immutable (chattr +i)
+
+
+⚙️  SIMPLE USAGE EXAMPLES
+═══════════════════════════════════════════════════════════════════════════════
+
+ENABLE LOCK (Interactive):
+──────────────────────────
+$ sudo ./jp/lock-manager.sh
+  → Select "1) ネットワークロックを有効化"
+  → Confirms and locks all network settings
+  ✓ Lock applied successfully
+
+CHECK STATUS:
+─────────────
+$ sudo ./jp/lock-manager.sh --status
+  → Displays current lock status
+  → Shows lock timestamp and user
+  → Lists protected components
+
+DISABLE LOCK (Interactive):
+───────────────────────────
+$ sudo ./jp/lock-manager.sh
+  → Select "2) ネットワークロックを無効化"
+  → Asks for confirmation (yes/no)
+  → Unlocks all protections
+  ✓ Lock removed successfully
+
+ENABLE LOCK (Direct Command):
+──────────────────────────────
+$ sudo ./jp/network-lock.sh
+  [情報] Ubuntuネットワーク設定ロックを開始します...
+  [成功] ネットワーク設定がロックされました
+
+DISABLE LOCK (Direct Command):
+───────────────────────────────
+$ sudo ./jp/network-lock.sh --unlock
+  [警告] ネットワーク設定をロック解除中...
+  [成功] ネットワーク設定がロック解除されました
+
+
+📊 SUPPORTED SYSTEMS
+═══════════════════════════════════════════════════════════════════════════════
+
+• Ubuntu 24.04 LTS         ✓ Tested and verified
+• Ubuntu 22.04 LTS         ✓ Likely compatible
+• Ubuntu 20.04 LTS         ✓ May work (netplan required)
+• Debian 12 (Bookworm)     ✓ Likely compatible
+• Other Debian-based       ? May require adjustments
+
+
+⚠️  IMPORTANT WARNINGS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. ROOT ACCESS REQUIRED
+   • All operations require sudo/root privilege
+   • Will be denied if user lacks proper permissions
+
+2. NETWORK SERVICE RESTART
+   • Networking services will restart during lock
+   • May cause brief network interruption (usually < 10 seconds)
+
+3. POTENTIAL SIDE EFFECTS
+   • Some applications may fail if they try to modify network settings
+   • SSH sessions might drop briefly during restart
+   • Container networking may be affected
+
+4. ALWAYS TEST FIRST
+   • Test in non-critical environment before production
+   • Verify network connectivity after locking
+   • Have unlock procedure ready if needed
+
+
+✅ BEFORE YOU START
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Backup your network configuration:
+  $ sudo cp -r /etc/netplan ~/netplan-backup
+
+□ Document your current network setup:
+  $ cat /etc/netplan/*.yaml
+
+□ Test in non-critical environment first
+
+□ Ensure you have root/sudo access
+
+□ Understand the unlock procedure
+
+□ Have internet access documented/recorded
+
+
+🔧 TROUBLESHOOTING QUICK REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+Problem: Scripts won't execute
+Solution:
+  $ sudo chmod +x ./en/*.sh ./jp/*.sh
+
+Problem: Immutable flags won't clear after unlock
+Solution:
+  $ sudo chattr -i /etc/netplan/*.yaml
+  $ sudo chattr -i /etc/network/interfaces.d/*
+
+Problem: NetworkManager service won't restart
+Solution:
+  $ sudo rm /etc/NetworkManager/conf.d/99-lock-settings.conf
+  $ sudo systemctl restart NetworkManager
+
+Problem: Lost network connectivity
+Solution:
+  $ sudo ./jp/network-lock.sh --unlock
+  $ sudo systemctl restart networking
+  $ ping 8.8.8.8
+
+Problem: Can't run network commands
+Solution:
+  $ sudo visudo -f /etc/sudoers.d/network-lock
+  # Review/modify restrictions as needed
+
+
+📚 DOCUMENTATION
+═══════════════════════════════════════════════════════════════════════════════
+
+English:
+  $ cat en/README.md
+
+日本語:
+  $ cat jp/README.md
+
+Main Overview:
+  $ cat README.md
+
+Setup Guide:
+  $ bash SETUP.sh
+
+
+🎯 NEXT STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Read the main README.md:
+   $ cat README.md
+
+2. Run the setup guide:
+   $ bash SETUP.sh
+
+3. Review the detailed documentation:
+   $ cat jp/README.md    (or en/README.md for English)
+
+4. Test safely in non-critical environment:
+   $ sudo ./jp/lock-manager.sh
+
+5. Deploy to production with confidence!
+
+
+💡 TIPS
+═══════════════════════════════════════════════════════════════════════════════
+
+• Use lock-manager.sh for interactive, menu-driven experience
+• Use network-lock.sh directly for scripting/automation
+• Check /var/lock/network-lock.status for lock information
+• Review journalctl logs for service-related issues
+• Use lsattr to check immutable file flags
+
+Examples:
+  $ cat /var/lock/network-lock.status         # View lock info
+  $ lsattr /etc/netplan/*                     # Check immutable flags
+  $ journalctl -u NetworkManager              # View NM logs
+  $ sudo visudo -f /etc/sudoers.d/network-lock  # Edit restrictions
+
+
+🌐 LANGUAGE SUPPORT
+═══════════════════════════════════════════════════════════════════════════════
+
+Both English (en/) and Japanese (jp/) versions have:
+  • Identical functionality
+  • Localized messages and prompts
+  • Complete documentation in each language
+  • Interactive menus in appropriate language
+
+Choose based on your preference:
+  English:  $ sudo ./en/lock-manager.sh
+  日本語:    $ sudo ./jp/lock-manager.sh
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                          Ready to secure your system?
+
+                   $ cd network-lock && sudo ./jp/lock-manager.sh
+
+═════════════════════════════════════════════════════════════════════════════════
